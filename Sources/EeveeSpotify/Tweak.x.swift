@@ -45,6 +45,11 @@ func exitApplication() {
     }
 }
 
+// Premium hooks are split so core network/bootstrap patching can stay enabled
+// even if certain UI hooks break on a specific Spotify build.
+struct PremiumBootstrapGroup: HookGroup { }      // Intercept bootstrap + mutate UCS
+struct PremiumUIHooksGroup: HookGroup { }       // UI JSON injections, Siri tweaks, etc.
+
 struct BasePremiumPatchingGroup: HookGroup { }
 
 struct IOS14PremiumPatchingGroup: HookGroup { }
@@ -273,13 +278,18 @@ struct EeveeSpotify: Tweak {
         // For 9.1.x, activate premium patching and lyrics
         if EeveeSpotify.hookTarget == .v91 {
             
-            // Premium patching (guarded)
+            // Premium patching (9.1.x)
+            // Always activate the *bootstrap interceptor*; it is required for premium patching.
             if UserDefaults.patchType.isPatching {
+                PremiumBootstrapGroup().activate()
+                writeDebugLog("[INIT] Activated PremiumBootstrapGroup")
+
+                // Optional UI hooks (safe-gated)
                 if let hub = NSClassFromString("HUBViewModelBuilderImplementation"),
                    class_getInstanceMethod(hub, Selector(("addJSONDictionary:"))) != nil {
-                    BasePremiumPatchingGroup().activate()
+                    PremiumUIHooksGroup().activate()
                 } else {
-                    writeDebugLog("[INIT] Skipped BasePremiumPatchingGroup (missing HUBViewModelBuilderImplementation/addJSONDictionary:)")
+                    writeDebugLog("[INIT] Skipped PremiumUIHooksGroup (missing HUBViewModelBuilderImplementation/addJSONDictionary:)")
                 }
             }
             
