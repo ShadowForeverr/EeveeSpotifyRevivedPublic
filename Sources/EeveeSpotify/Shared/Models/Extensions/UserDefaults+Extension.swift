@@ -11,6 +11,7 @@ extension UserDefaults {
     private static let lyricsColorsKey = "lyricsColors"
     private static let lyricsOptionsKey = "lyricsOptions"
     private static let hasShownCommonIssuesTipKey = "hasShownCommonIssuesTip"
+    private static let hasPatchedBootstrapKey = "eeveeHasPatchedBootstrap"
 
     static var musixmatchToken: String {
         get {
@@ -63,6 +64,11 @@ extension UserDefaults {
         }
     }
     
+    static var hasPatchedBootstrap: Bool {
+        get { container.bool(forKey: hasPatchedBootstrapKey) }
+        set { container.set(newValue, forKey: hasPatchedBootstrapKey) }
+    }
+
     static var hasShownCommonIssuesTip: Bool {
         get {
             container.bool(forKey: hasShownCommonIssuesTipKey)
