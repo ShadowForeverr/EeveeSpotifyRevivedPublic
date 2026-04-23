@@ -47,7 +47,7 @@ class SPTDataLoaderServiceHook: ClassHook<NSObject>, SpotifySessionDelegate {
             return url.isAccountValidate || url.isOndemandSelector
                 || url.isTrialsFacade || url.isPremiumMarketing || url.isPendragonFetchMessageList
                 || url.isPushkaTokens || url.path.contains("signup/public") || url.path.contains("apresolve")
-                || url.path.contains("pses/screenconfig") || url.path.contains("bootstrap/v1/bootstrap")
+                || url.path.contains("pses/screenconfig")
                 // Block periodic customize re-fetches (RemoteConfigurationSDK AuthFetcher).
                 // The AuthFetcher re-fetches v1/customize after minimumFetchIntervalSeconds
                 // (typically a few hours). If this re-fetch is not intercepted and modified,
@@ -103,8 +103,6 @@ class SPTDataLoaderServiceHook: ClassHook<NSObject>, SpotifySessionDelegate {
         } else if url.path.contains("apresolve") {
             respondWithCustomData("{\"status\":\"OK\"}".data(using: .utf8)!, task: task, session: session)
         } else if url.path.contains("pses/screenconfig") {
-            respondWithCustomData("{}".data(using: .utf8)!, task: task, session: session)
-        } else if url.path.contains("bootstrap/v1/bootstrap") {
             respondWithCustomData("{}".data(using: .utf8)!, task: task, session: session)
         } else if url.isAdRelated {
             respondWithCustomData(Data(), task: task, session: session)
